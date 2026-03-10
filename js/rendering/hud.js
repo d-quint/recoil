@@ -4,12 +4,7 @@
 
 import { NATIVE_W, NATIVE_H, FG, BG, TILE, HUD_H } from "../constants.js";
 import { drawText } from "./font.js";
-import {
-  SPR_PLAYER_R, SPR_PLAYER_L, SPR_PLAYER_R2, SPR_PLAYER_L2,
-  SPR_ENEMY, SPR_ENEMY2,
-  SPR_SHOOTER_R, SPR_SHOOTER_R2, SPR_SHOOTER_L, SPR_SHOOTER_L2,
-  SPR_FLAG, SPR_BULLET, SPR_AMMO, SPR_GATE,
-} from "./sprites.js";
+import { SPR_PLAYER_R, SPR_FLAG, SPR_AMMO } from "./sprites.js";
 
 export default class Renderer {
   /** @param {CanvasRenderingContext2D} ctx */
@@ -67,7 +62,7 @@ export default class Renderer {
   drawGameScene(game) {
     const ctx = this.ctx;
     const { player, tiles, flag, textLabels, enemies, pickups, gates, bullets,
-            particles, input, levelWon, levelLost, victoryTimer } = game;
+            particles, levelWon, levelLost, victoryTimer } = game;
     const VICTORY_DURATION = game.VICTORY_DURATION;
 
     ctx.fillStyle = BG;
@@ -89,11 +84,7 @@ export default class Renderer {
     ctx.fillStyle = FG;
 
     // --- ammo pickups ---
-    for (const a of pickups) {
-      if (!a.alive) continue;
-      const bob = Math.sin(performance.now() / 200) * 1.5;
-      this._drawSprite(SPR_AMMO, a.x, a.y + bob);
-    }
+    for (const a of pickups) a.draw(ctx);
 
     // --- flag ---
     if (flag) this._drawSprite(SPR_FLAG, flag.x, flag.y);
@@ -107,72 +98,16 @@ export default class Renderer {
     }
 
     // --- gates ---
-    for (const g of gates) {
-      if (!g.open) {
-        this._drawSprite(SPR_GATE, g.x, g.y);
-        drawText(ctx, String(g.killsRemaining), g.x + TILE / 2, g.y + 2, "center", BG);
-      } else if (g.breakTimer > 0) {
-        if (g.breakTimer % 4 < 2) this._drawSprite(SPR_FLAG, g.x, g.y);
-      } else {
-        this._drawSprite(SPR_FLAG, g.x, g.y);
-      }
-    }
+    for (const g of gates) g.draw(ctx);
 
     // --- enemies ---
-    for (const e of enemies) {
-      if (!e.alive) continue;
-      if (e.isShooter) {
-        const facingRight = e.aiming ? e.aimDir > 0 : e.vx > 0;
-        let spr;
-        if (facingRight) spr = e.animFrame ? SPR_SHOOTER_R2 : SPR_SHOOTER_R;
-        else             spr = e.animFrame ? SPR_SHOOTER_L2 : SPR_SHOOTER_L;
+    for (const e of enemies) e.draw(ctx);
 
-        // breathing bob offset when aiming
-        const drawY = e.aiming ? e.y + (e.bobOffset || 0) : e.y;
-        this._drawSprite(spr, e.x, drawY);
-
-        // exclamation mark alert
-        if (e.showAlert) {
-          drawText(ctx, "!", e.x + 3, e.y - 6);
-        }
-      } else {
-        this._drawSprite(e.animFrame ? SPR_ENEMY2 : SPR_ENEMY, e.x, e.y);
-      }
-    }
-
-    // --- player ---
-    if (player && !player.dead) {
-      let spr;
-      if (player.facingRight) spr = player.animFrame ? SPR_PLAYER_R2 : SPR_PLAYER_R;
-      else                    spr = player.animFrame ? SPR_PLAYER_L2 : SPR_PLAYER_L;
-      this._drawSprite(spr, player.x, player.y);
-
-      // crosshair
-      const cx = input.mouseX | 0;
-      const cy = input.mouseY | 0;
-      ctx.fillStyle = FG;
-      ctx.fillRect(cx, cy - 2, 1, 5);
-      ctx.fillRect(cx - 2, cy, 5, 1);
-      ctx.fillStyle = BG;
-      ctx.fillRect(cx, cy, 1, 1);
-      ctx.fillStyle = FG;
-    }
+    // --- player (sprite, crosshair, muzzle flash) ---
+    if (player) player.draw(ctx);
 
     // --- bullets ---
-    for (const b of bullets) {
-      this._drawSprite(SPR_BULLET, b.x, b.y);
-    }
-
-    // --- muzzle flash ---
-    if (player && player.muzzleFlash > 0 && !player.dead) {
-      const dx  = input.mouseX - player.cx;
-      const dy  = input.mouseY - player.cy;
-      const len = Math.sqrt(dx * dx + dy * dy) || 1;
-      ctx.fillStyle = FG;
-      ctx.beginPath();
-      ctx.arc(player.cx + (dx / len) * 7, player.cy + (dy / len) * 7, 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    for (const b of bullets) b.draw(ctx);
 
     // --- particles ---
     particles.draw(ctx);

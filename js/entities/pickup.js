@@ -4,6 +4,7 @@
 
 import Entity from "./entity.js";
 import { aabb } from "../engine/physics.js";
+import { SPR_AMMO } from "../rendering/sprites.js";
 
 export default class Pickup extends Entity {
   /**
@@ -26,5 +27,12 @@ export default class Pickup extends Entity {
       return 3;
     }
     return 0;
+  }
+
+  /** Draw the ammo pickup with a floating bob. */
+  draw(ctx) {
+    if (!this.alive) return;
+    const bob = Math.sin(performance.now() / 200) * 1.5;
+    ctx.drawImage(SPR_AMMO, this.x | 0, (this.y + bob) | 0);
   }
 }

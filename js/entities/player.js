@@ -5,9 +5,12 @@
 import Entity from "./entity.js";
 import {
   GRAVITY, MAX_FALL, FRICTION, RECOIL_FORCE, MAX_RECOIL_SPD,
-  BULLET_SPEED, MUZZLE_FLASH_FRAMES, NATIVE_W, NATIVE_H, ANIM_INTERVAL,
+  BULLET_SPEED, MUZZLE_FLASH_FRAMES, NATIVE_W, NATIVE_H, ANIM_INTERVAL, FG, BG,
 } from "../constants.js";
 import { resolveTileCollisions } from "../engine/physics.js";
+import {
+  SPR_PLAYER_R, SPR_PLAYER_L, SPR_PLAYER_R2, SPR_PLAYER_L2,
+} from "../rendering/sprites.js";
 
 export default class Player extends Entity {
   /**
@@ -127,5 +130,38 @@ export default class Player extends Entity {
 
     // muzzle flash countdown
     if (this.muzzleFlash > 0) this.muzzleFlash--;
+  }
+
+  /** Draw the player sprite, crosshair, and muzzle flash. */
+  draw(ctx) {
+    if (this.dead) return;
+
+    const { input } = this.game;
+
+    // sprite
+    let spr;
+    if (this.facingRight) spr = this.animFrame ? SPR_PLAYER_R2 : SPR_PLAYER_R;
+    else                  spr = this.animFrame ? SPR_PLAYER_L2 : SPR_PLAYER_L;
+    ctx.drawImage(spr, this.x | 0, this.y | 0);
+
+    // crosshair
+    const cx = input.mouseX | 0;
+    const cy = input.mouseY | 0;
+    ctx.fillStyle = FG;
+    ctx.fillRect(cx, cy - 2, 1, 5);
+    ctx.fillRect(cx - 2, cy, 5, 1);
+    ctx.fillStyle = BG;
+    ctx.fillRect(cx, cy, 1, 1);
+
+    // muzzle flash
+    if (this.muzzleFlash > 0) {
+      const dx  = input.mouseX - this.cx;
+      const dy  = input.mouseY - this.cy;
+      const len = Math.sqrt(dx * dx + dy * dy) || 1;
+      ctx.fillStyle = FG;
+      ctx.beginPath();
+      ctx.arc(this.cx + (dx / len) * 7, this.cy + (dy / len) * 7, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 }

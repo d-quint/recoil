@@ -3,7 +3,9 @@
 // ============================================================
 
 import Entity from "./entity.js";
-import { TILE } from "../constants.js";
+import { TILE, BG } from "../constants.js";
+import { drawText } from "../rendering/font.js";
+import { SPR_GATE, SPR_FLAG } from "../rendering/sprites.js";
 
 export default class Gate extends Entity {
   /**
@@ -45,5 +47,17 @@ export default class Gate extends Entity {
   /** Return a flag rect for an opened gate, or null if still closed. */
   getFlagRect() {
     return this.open ? { x: this.x, y: this.y, w: 8, h: 8 } : null;
+  }
+
+  /** Draw the gate (locked wall or revealed flag). */
+  draw(ctx) {
+    if (!this.open) {
+      ctx.drawImage(SPR_GATE, this.x | 0, this.y | 0);
+      drawText(ctx, String(this.killsRemaining), this.x + TILE / 2, this.y + 2, "center", BG);
+    } else if (this.breakTimer > 0) {
+      if (this.breakTimer % 4 < 2) ctx.drawImage(SPR_FLAG, this.x | 0, this.y | 0);
+    } else {
+      ctx.drawImage(SPR_FLAG, this.x | 0, this.y | 0);
+    }
   }
 }

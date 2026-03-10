@@ -5,6 +5,10 @@
 
 import Enemy from "./enemy.js";
 import { aabb } from "../engine/physics.js";
+import { drawText } from "../rendering/font.js";
+import {
+  SPR_SHOOTER_R, SPR_SHOOTER_R2, SPR_SHOOTER_L, SPR_SHOOTER_L2,
+} from "../rendering/sprites.js";
 
 /** How many frames between each shot while aiming. */
 const SHOOT_INTERVAL = 60;
@@ -114,5 +118,24 @@ export default class ShooterEnemy extends Enemy {
     // muzzle flash particles
     particles.spawn(bx, by, 3, 1.5);
     sfx.shoot();
+  }
+
+  /** Draw the shooter enemy with directional sprite, bob, and alert. */
+  draw(ctx) {
+    if (!this.alive) return;
+
+    const facingRight = this.aiming ? this.aimDir > 0 : this.vx > 0;
+    let spr;
+    if (facingRight) spr = this.animFrame ? SPR_SHOOTER_R2 : SPR_SHOOTER_R;
+    else             spr = this.animFrame ? SPR_SHOOTER_L2 : SPR_SHOOTER_L;
+
+    // breathing bob offset when aiming
+    const drawY = this.aiming ? this.y + (this.bobOffset || 0) : this.y;
+    ctx.drawImage(spr, this.x | 0, drawY | 0);
+
+    // exclamation mark alert
+    if (this.showAlert) {
+      drawText(ctx, "!", this.x + 3, this.y - 6);
+    }
   }
 }

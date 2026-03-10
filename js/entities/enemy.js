@@ -5,6 +5,7 @@
 import Entity from "./entity.js";
 import { ENEMY_SPD, ANIM_INTERVAL } from "../constants.js";
 import { aabb } from "../engine/physics.js";
+import { SPR_ENEMY, SPR_ENEMY2 } from "../rendering/sprites.js";
 
 export default class Enemy extends Entity {
   /**
@@ -67,5 +68,12 @@ export default class Enemy extends Entity {
       return true;
     }
     return false;
+  }
+
+  /** Draw the enemy sprite. */
+  draw(ctx) {
+    if (!this.alive) return;
+    const spr = this.animFrame ? SPR_ENEMY2 : SPR_ENEMY;
+    ctx.drawImage(spr, this.x | 0, this.y | 0);
   }
 }

@@ -5,6 +5,7 @@
 import Entity from "./entity.js";
 import { aabb } from "../engine/physics.js";
 import { NATIVE_W, NATIVE_H } from "../constants.js";
+import { SPR_BULLET } from "../rendering/sprites.js";
 
 const MAX_BOUNCES = 3;
 
@@ -106,5 +107,10 @@ export default class Bullet extends Entity {
     }
 
     return null;
+  }
+
+  /** Draw the bullet sprite. */
+  draw(ctx) {
+    ctx.drawImage(SPR_BULLET, this.x | 0, this.y | 0);
   }
 }
