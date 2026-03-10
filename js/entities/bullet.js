@@ -1,66 +1,58 @@
 // ============================================================
-//  Bullet pool
+//  Bullet — projectile with bounce physics
 // ============================================================
 
+import Entity from "./entity.js";
 import { aabb } from "../engine/physics.js";
-import { spawnParticles } from "../engine/particles.js";
 import { NATIVE_W, NATIVE_H } from "../constants.js";
-import { sfxBounce, sfxShatter } from "../engine/sfx.js";
 
 const MAX_BOUNCES = 3;
 
-let bullets = [];
+export default class Bullet extends Entity {
+  /**
+   * @param {import('../game.js').default} game
+   */
+  constructor(game, x, y, vx, vy) {
+    super(x, y, 2, 2);
+    this.game = game;
+    this.vx = vx;
+    this.vy = vy;
+    this.life = 60;
+    this.fromPlayer = true;
+    this.bounces = 0;
+  }
 
-export function clearBullets() {
-  bullets = [];
-}
+  /**
+   * Advance bullet by one frame.
+   * Returns an enemy if one was killed this frame, otherwise null.
+   */
+  update(tiles, enemies, player) {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life--;
 
-export function getBullets() {
-  return bullets;
-}
+    const { particles, sfx } = this.game;
 
-/** Spawn a new bullet. */
-export function addBullet(x, y, vx, vy) {
-  bullets.push({ x, y, w: 2, h: 2, vx, vy, life: 60, fromPlayer: true, bounces: 0 });
-}
-
-/**
- * Update all bullets. Returns an object with arrays of events:
- *   { killedEnemies: Enemy[], hitPlayer: boolean }
- */
-export function updateBullets(tiles, enemies, player) {
-  const killedEnemies = [];
-
-  for (let i = bullets.length - 1; i >= 0; i--) {
-    const b = bullets[i];
-    b.x += b.vx;
-    b.y += b.vy;
-    b.life--;
-
-    // hit tiles — bounce or shatter
+    // --- tile collision: bounce or shatter ---
     let hitTile = null;
     for (const t of tiles) {
-      if (aabb(b, t)) {
-        hitTile = t;
-        break;
-      }
+      if (aabb(this, t)) { hitTile = t; break; }
     }
 
     if (hitTile) {
-      if (b.bounces >= MAX_BOUNCES) {
-        // shatter
-        spawnParticles(b.x, b.y, 4, 2);
-        sfxShatter();
-        bullets.splice(i, 1);
-        continue;
+      if (this.bounces >= MAX_BOUNCES) {
+        particles.spawn(this.x, this.y, 4, 2);
+        sfx.shatter();
+        this.alive = false;
+        return null;
       }
-      // reflect — determine which axis to flip
-      // step back, test each axis against ALL tiles
-      b.x -= b.vx;
-      b.y -= b.vy;
 
-      const testX = { x: b.x + b.vx, y: b.y, w: b.w, h: b.h };
-      const testY = { x: b.x, y: b.y + b.vy, w: b.w, h: b.h };
+      // step back, test each axis
+      this.x -= this.vx;
+      this.y -= this.vy;
+
+      const testX = { x: this.x + this.vx, y: this.y, w: this.w, h: this.h };
+      const testY = { x: this.x, y: this.y + this.vy, w: this.w, h: this.h };
 
       let hitX = false, hitY = false;
       for (const t of tiles) {
@@ -69,43 +61,43 @@ export function updateBullets(tiles, enemies, player) {
         if (hitX && hitY) break;
       }
 
-      if (hitX) b.vx = -b.vx;
-      if (hitY) b.vy = -b.vy;
-      if (!hitX && !hitY) { b.vx = -b.vx; b.vy = -b.vy; } // true corner
+      if (hitX) this.vx = -this.vx;
+      if (hitY) this.vy = -this.vy;
+      if (!hitX && !hitY) { this.vx = -this.vx; this.vy = -this.vy; } // corner
 
-      // move with reflected velocity
-      b.x += b.vx;
-      b.y += b.vy;
-      b.bounces++;
-      spawnParticles(b.x, b.y, 2, 1);
-      sfxBounce();
+      this.x += this.vx;
+      this.y += this.vy;
+      this.bounces++;
+      particles.spawn(this.x, this.y, 2, 1);
+      sfx.bounce();
 
       // bounced bullet absorbed by player (no damage)
-      if (player && !player.dead && aabb(b, player)) {
-        spawnParticles(b.x, b.y, 2, 1);
-        bullets.splice(i, 1);
+      if (player && !player.dead && aabb(this, player)) {
+        particles.spawn(this.x, this.y, 2, 1);
+        this.alive = false;
       }
-      continue;
+      return null;
     }
 
-    if (b.life <= 0 || b.x < -10 || b.x > NATIVE_W + 10 || b.y < -10 || b.y > NATIVE_H + 10) {
-      bullets.splice(i, 1);
-      continue;
+    // --- off-screen / expired ---
+    if (this.life <= 0 || this.x < -10 || this.x > NATIVE_W + 10 ||
+        this.y < -10 || this.y > NATIVE_H + 10) {
+      this.alive = false;
+      return null;
     }
 
-    // hit enemies
-    if (b.fromPlayer) {
+    // --- hit enemies ---
+    if (this.fromPlayer) {
       for (const e of enemies) {
-        if (e.alive && aabb(b, e)) {
+        if (e.alive && aabb(this, e)) {
           e.alive = false;
-          killedEnemies.push(e);
-          bullets.splice(i, 1);
-          spawnParticles(e.x + 4, e.y + 4, 10, 3);
-          break;
+          this.alive = false;
+          particles.spawn(e.x + 4, e.y + 4, 10, 3);
+          return e; // killed this enemy
         }
       }
     }
-  }
 
-  return { killedEnemies };
+    return null;
+  }
 }
