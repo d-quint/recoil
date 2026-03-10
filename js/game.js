@@ -239,7 +239,7 @@ export default class Game {
     }
 
     // update other entities
-    for (const e of [...this.enemies, ...this.pickups, ...this.gates]) e.update();
+    for (const e of [...this.enemies, ...this.pickups, ...this.gates, ...this.spikes]) e.update();
 
     // flag check
     if (this.flag && !this.player.dead && aabb(this.player, this.flag)) {

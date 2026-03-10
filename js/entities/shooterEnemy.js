@@ -51,15 +51,12 @@ export default class ShooterEnemy extends Enemy {
    * when the player is on roughly the same Y.
    */
   update() {
-    const { player } = this.game;
+    const { player, currentTiles } = this.game;
 
     if (!this.alive) return;
 
-    const sameLine = player && !player.dead &&
-      Math.abs((this.y + this.h / 2) - (player.y + player.h / 2)) < Y_TOLERANCE;
-
     // --- aim mode ---  
-    if (sameLine) {
+    if (this._sightClear(player, currentTiles)) {
       // --- entering aim mode for the first time? ---
       if (!this.aiming) {
         this.aiming = true;
@@ -120,6 +117,23 @@ export default class ShooterEnemy extends Enemy {
     // muzzle flash particles
     particles.spawn(bx, by, 3, 1.5);
     sfx.shoot();
+  }
+
+  _sightClear(player, tiles) {
+    const sameLine = player && !player.dead &&
+      Math.abs((this.y + this.h / 2) - (player.y + player.h / 2)) < Y_TOLERANCE;
+
+    if (!sameLine) return false;
+
+    const left = Math.min(this.cx, player.cx);
+    const right = Math.max(this.cx, player.cx);
+    const probe = { x: left, y: this.cy - 1, w: right - left, h: 2 };
+
+    for (const t of tiles) {
+      if (aabb(probe, t)) return false;
+    }
+
+    return true;
   }
 
   /** Draw the shooter enemy with directional sprite, bob, and alert. */
