@@ -41,6 +41,7 @@ export default class Player extends Entity {
   /** Fire a bullet toward the mouse and apply recoil. Returns true if fired. */
   shoot() {
     if (this.ammo <= 0 || this.dead) return false;
+
     this.ammo--;
     this.muzzleFlash = MUZZLE_FLASH_FRAMES;
 
@@ -50,6 +51,10 @@ export default class Player extends Entity {
     const len = Math.sqrt(dx * dx + dy * dy) || 1;
     const nx  = dx / len;
     const ny  = dy / len;
+
+    // change sprite direction when inconsistent with bullet direction
+    if (nx < 0 && this.facingRight) this.facingRight = false;
+    if (nx > 0 && !this.facingRight) this.facingRight = true;
 
     // spawn bullet
     this.game.addBullet(
