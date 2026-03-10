@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RECOIL — Level Editor</title>
+  <link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+
+  <!-- sidebar -->
+  <div id="sidebar">
+    <h2>RECOIL EDITOR</h2>
+
+    <span class="section-label">Level</span>
+    <div class="name-row">
+      <input type="text" id="level-name" placeholder="Level name" value="Untitled">
+    </div>
+    <div class="ammo-row">
+      <label>Ammo</label>
+      <input type="number" id="ammo-count" min="1" max="99" value="5">
+    </div>
+
+    <span class="section-label">Tools</span>
+    <div id="tools">
+      <button class="tool-btn active" data-tool="tile">▓ Tile</button>
+      <button class="tool-btn" data-tool="erase">✕ Erase</button>
+      <button class="tool-btn" data-tool="player">☺ Player</button>
+      <button class="tool-btn" data-tool="flag">⚑ Flag</button>
+      <button class="tool-btn" data-tool="enemy">☠ Enemy</button>
+      <button class="tool-btn" data-tool="ammo">⊕ Ammo</button>
+      <button class="tool-btn" data-tool="gate">⊞ Gate</button>
+      <button class="tool-btn" data-tool="text">T Text</button>
+    </div>
+
+    <span class="section-label">Actions</span>
+    <button class="action-btn play" id="btn-playtest">▶ PLAYTEST</button>
+    <button class="action-btn" id="btn-save">Save to Browser</button>
+    <button class="action-btn" id="btn-export">Export .json</button>
+    <button class="action-btn" id="btn-copy">Copy JSON</button>
+    <button class="action-btn" id="btn-import">Import .json</button>
+    <button class="action-btn danger" id="btn-clear">Clear Level</button>
+
+    <span class="section-label">Saved Levels</span>
+    <div id="level-list"></div>
+    <button class="action-btn" id="btn-new">+ New Level</button>
+  </div>
+
+  <!-- main area -->
+  <div id="main">
+    <div id="topbar">
+      <span class="coords" id="coords">--:--</span>
+      <span class="info">Click to place · Drag to paint · Right-click to erase</span>
+    </div>
+    <div id="canvas-wrap">
+      <canvas id="editor-canvas"></canvas>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <input type="file" id="file-input" accept=".json" style="display:none">
+
+  <script type="module" src="js/editor/editor.js"></script>
+</body>
+</html>

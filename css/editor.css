@@ -1,0 +1,252 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ---- sidebar ---- */
+#sidebar {
+  width: 220px;
+  background: #16213e;
+  border-right: 2px solid #0f3460;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+#sidebar h2 {
+  color: #e94560;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 4px;
+  letter-spacing: 2px;
+}
+
+.section-label {
+  color: #888;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 2px;
+}
+
+/* tools */
+#tools {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.tool-btn {
+  background: #0f3460;
+  border: 2px solid #1a1a5e;
+  color: #e0e0e0;
+  padding: 6px 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  text-align: center;
+  transition: all 0.1s;
+}
+
+.tool-btn:hover {
+  background: #1a4a8e;
+}
+
+.tool-btn.active {
+  background: #e94560;
+  border-color: #ff6b81;
+  color: #fff;
+}
+
+/* ammo */
+.ammo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ammo-row label {
+  flex: 1;
+}
+
+.ammo-row input {
+  width: 50px;
+  background: #0f3460;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 4px;
+  font-family: inherit;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* level name */
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.name-row input {
+  flex: 1;
+  background: #0f3460;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 4px;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+/* action buttons */
+.action-btn {
+  background: #0f3460;
+  border: 2px solid #1a1a5e;
+  color: #e0e0e0;
+  padding: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  text-align: center;
+  transition: all 0.1s;
+  width: 100%;
+}
+
+.action-btn:hover {
+  background: #1a4a8e;
+}
+
+.action-btn.danger {
+  border-color: #e94560;
+}
+.action-btn.danger:hover {
+  background: #e94560;
+}
+
+.action-btn.play {
+  background: #1b8c3a;
+  border-color: #25a84c;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.action-btn.play:hover {
+  background: #25a84c;
+}
+
+/* level list */
+#level-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 0;
+}
+
+.level-item {
+  background: #0f3460;
+  padding: 5px 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  border: 1px solid transparent;
+}
+
+.level-item:hover {
+  background: #1a4a8e;
+}
+
+.level-item.active {
+  border-color: #e94560;
+  background: #1a2a5e;
+}
+
+.level-item .del-btn {
+  background: none;
+  border: none;
+  color: #e94560;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  font-family: inherit;
+}
+
+/* ---- main area ---- */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* toolbar top */
+#topbar {
+  background: #16213e;
+  border-bottom: 2px solid #0f3460;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+
+#topbar .info {
+  color: #888;
+}
+
+#topbar .coords {
+  color: #e94560;
+  min-width: 80px;
+}
+
+/* canvas area */
+#canvas-wrap {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 10px;
+  position: relative;
+}
+
+#editor-canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border: 2px solid #0f3460;
+  cursor: crosshair;
+}
+
+/* toast */
+#toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e94560;
+  color: #fff;
+  padding: 8px 20px;
+  font-family: inherit;
+  font-size: 13px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 999;
+}
+
+#toast.show {
+  opacity: 1;
+}
