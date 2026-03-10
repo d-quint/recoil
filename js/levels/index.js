@@ -4,12 +4,15 @@
 
 /** Manifest of bundled level file paths (order matters). */
 const LEVEL_FILES = [
-  "levels/level1.json",
-  "levels/level2.json",
-  "levels/level3.json",
-  "levels/level4.json",
-  "levels/level5.json",
+  "level1.json",
+  "level2.json",
+  "level3.json",
+  "level4.json",
+  "level5.json",
 ];
+
+/** Resolve paths relative to this module (js/levels/) → ../../levels/ */
+const LEVELS_BASE = new URL("../../levels/", import.meta.url).href;
 
 let _levels = [];
 
@@ -19,7 +22,7 @@ let _levels = [];
  */
 export async function loadAllLevels() {
   _levels = await Promise.all(
-    LEVEL_FILES.map((path) => fetch(path).then((r) => r.json()))
+    LEVEL_FILES.map((name) => fetch(LEVELS_BASE + name).then((r) => r.json()))
   );
 }
 

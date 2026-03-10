@@ -450,19 +450,20 @@ function setToolByName(name) {
 }
 
 // ---- bundled level manifest (same order as the game) ----
+const LEVELS_BASE = new URL("../../levels/", import.meta.url).href;
 const BUNDLED_LEVEL_FILES = [
-  "levels/level1.json",
-  "levels/level2.json",
-  "levels/level3.json",
-  "levels/level4.json",
-  "levels/level5.json",
+  "level1.json",
+  "level2.json",
+  "level3.json",
+  "level4.json",
+  "level5.json",
 ];
 
 async function loadBundledLevels() {
   try {
     const fetched = await Promise.all(
-      BUNDLED_LEVEL_FILES.map((path) =>
-        fetch(path).then((r) => {
+      BUNDLED_LEVEL_FILES.map((name) =>
+        fetch(LEVELS_BASE + name).then((r) => {
           if (!r.ok) return null;
           return r.json();
         }).catch(() => null)
