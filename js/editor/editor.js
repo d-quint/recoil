@@ -133,6 +133,7 @@ const ENTITY_COLORS = {
   A: "#44aaff",
   G: "#aa44ff",
   T: "#88ccaa",
+  X: "#8d8d8d", 
 };
 
 function drawEditor() {
@@ -235,6 +236,9 @@ function placeTool(row, col) {
       break;
     case "gate":
       grid[row][col] = "G";
+      break;
+    case "spike":
+      grid[row][col] = "X";
       break;
     case "text": {
       const content = prompt("Enter tutorial text:");

@@ -8,6 +8,7 @@ import Enemy        from "../entities/enemy.js";
 import ShooterEnemy from "../entities/shooterEnemy.js";
 import Pickup       from "../entities/pickup.js";
 import Gate         from "../entities/gate.js";
+import Spikes       from "../entities/spikes.js";
 
 /** Resolve paths relative to this module (js/levels/) → ../../levels/ */
 const LEVELS_BASE = new URL("../../levels/", import.meta.url).href;
@@ -68,6 +69,7 @@ export default class LevelManager {
     game.textLabels = [];
     game.flag       = null;
     game.bullets.length  = 0;
+    game.spikes.length = 0;
     game.enemies.length  = 0;
     game.pickups.length  = 0;
     game.gates.length    = 0;
@@ -112,6 +114,9 @@ export default class LevelManager {
             if (content) game.textLabels.push({ x, y, content });
             break;
           }
+          case "X":
+            game.spikes.push(new Spikes(game, x, y));
+            break;
         }
       }
     }

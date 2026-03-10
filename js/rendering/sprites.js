@@ -179,3 +179,15 @@ export const SPR_GATE = makeSprite([
   "########",
   "........",
 ]);
+
+// Spikes (8×8) — a row of spikes
+export const SPR_SPIKES = makeSprite([
+  "........",
+  "........",
+  "........",
+  ".#...#..",
+  ".#...#..", 
+  "###.###.",
+  "###.###.",
+  ".#.#.#.#"
+]);

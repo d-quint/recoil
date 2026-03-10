@@ -47,7 +47,9 @@ export default class Game {
     this.pickups = [];
     /** @type {import('./entities/gate.js').default[]} */
     this.gates   = [];
-
+    /** @type {import('./entities/spikes.js').default[]} */
+    this.spikes  = [];
+    
     // --- game flags ---
     this.levelWon  = false;
     this.levelLost = false;
@@ -178,6 +180,15 @@ export default class Game {
     this._notifyGateKill(1);
   }
 
+  /** Call this to kill player.  */
+  killPlayer() {
+    this.particles.spawn(this.player.x + 4, this.player.y + 4, 15, 3);
+    this.player.dead = true;
+    this.levelLost = true;
+    this.shakeTimer = 8;
+    this.sfx.death();
+  }
+
   /** Notify all gates that enemies were killed. */
   _notifyGateKill(count) {
     for (const gate of this.gates) {
@@ -248,6 +259,9 @@ export default class Game {
       }
       if (!this.bullets[i].alive) this.bullets.splice(i, 1);
     }
+
+    // spikes
+    for (const s of this.spikes) s.update(this.player);
 
     // enemies
     for (const e of this.enemies) {

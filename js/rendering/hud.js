@@ -61,7 +61,7 @@ export default class Renderer {
    */
   drawGameScene(game) {
     const ctx = this.ctx;
-    const { player, tiles, flag, textLabels, enemies, pickups, gates, bullets,
+    const { player, tiles, flag, textLabels, enemies, pickups, gates, bullets, spikes,
             particles, levelWon, levelLost, victoryTimer } = game;
     const VICTORY_DURATION = game.VICTORY_DURATION;
 
@@ -111,6 +111,9 @@ export default class Renderer {
 
     // --- particles ---
     particles.draw(ctx);
+
+    // --- spikes ---
+    for (const s of spikes) s.draw(ctx);
 
     // --- overlay messages ---
     const showWin = levelWon && victoryTimer >= VICTORY_DURATION;
