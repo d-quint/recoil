@@ -188,7 +188,7 @@ export function drawHUDBar(ctx, levelIndex) {
   // bullet sprite + "x N"
   ctx.save();
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(SPR_BULLET, 2, NATIVE_H + 4, 4, 4);
+  ctx.drawImage(SPR_AMMO, 1, NATIVE_H + 4, 6, 6);
   ctx.restore();
   drawText(ctx, "x" + getAmmo(), 8, NATIVE_H + 5);
   drawText(ctx, "level " + (levelIndex + 1), NATIVE_W / 2, NATIVE_H + 5, "center");
