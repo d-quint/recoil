@@ -39,9 +39,10 @@ export default class Renderer {
 
     drawText(ctx, "a/d or arrows to walk",  NATIVE_W / 2, 100, "center");
     drawText(ctx, "aim + click to shoot",   NATIVE_W / 2, 110, "center");
-    drawText(ctx, "recoil is your jump!",   NATIVE_W / 2, 120, "center");
-    drawText(ctx, "reach the flag",          NATIVE_W / 2, 135, "center");
-    drawText(ctx, "click to start",          NATIVE_W / 2, 155, "center");
+    drawText(ctx, "press r to restart lvl",   NATIVE_W / 2, 120, "center");
+    drawText(ctx, "recoil is your jump!",   NATIVE_W / 2, 130, "center");
+    drawText(ctx, "reach the flag",          NATIVE_W / 2, 145, "center");
+    drawText(ctx, "click to start",          NATIVE_W / 2, 165, "center");
   }
 
   // ---------- win screen ----------

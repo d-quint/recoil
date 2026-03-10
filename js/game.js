@@ -325,24 +325,24 @@ export default class Game {
       this.renderer.drawHUDBar(this);
     }
 
-    // clip to game viewport
+    // title & win screens draw full canvas (including HUD area), no clip needed
+    if (this.state === "title") {
+      this.renderer.drawTitleScreen();
+      return;
+    }
+    if (this.state === "win") {
+      this.renderer.drawWinScreen();
+      return;
+    }
+
+    // clip to game viewport so shake doesn't bleed into HUD
     c.save();
     c.beginPath();
     c.rect(0, 0, NATIVE_W, NATIVE_H);
     c.clip();
     c.translate(this.shakeX, this.shakeY);
 
-    switch (this.state) {
-      case "title":
-        this.renderer.drawTitleScreen();
-        break;
-      case "win":
-        this.renderer.drawWinScreen();
-        break;
-      case "play":
-        this.renderer.drawGameScene(this);
-        break;
-    }
+    this.renderer.drawGameScene(this);
 
     c.restore();
   }
