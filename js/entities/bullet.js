@@ -18,7 +18,7 @@ export default class Bullet extends Entity {
     this.game = game;
     this.vx = vx;
     this.vy = vy;
-    this.life = 60;
+    this.life = 120;
     this.fromPlayer = true;
     this.bounces = 0;
   }
