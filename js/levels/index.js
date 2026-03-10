@@ -4,11 +4,11 @@
 
 /** Manifest of bundled level file paths (order matters). */
 const LEVEL_FILES = [
-  "../levels/level1.json",
-  "../levels/level2.json",
-  "../levels/level3.json",
-  "../levels/level4.json",
-  "../levels/level5.json",
+  "levels/level1.json",
+  "levels/level2.json",
+  "levels/level3.json",
+  "levels/level4.json",
+  "levels/level5.json",
 ];
 
 let _levels = [];

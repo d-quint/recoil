@@ -451,11 +451,11 @@ function setToolByName(name) {
 
 // ---- bundled level manifest (same order as the game) ----
 const BUNDLED_LEVEL_FILES = [
-  "../levels/level1.json",
-  "../levels/level2.json",
-  "../levels/level3.json",
-  "../levels/level4.json",
-  "../levels/level5.json",
+  "levels/level1.json",
+  "levels/level2.json",
+  "levels/level3.json",
+  "levels/level4.json",
+  "levels/level5.json",
 ];
 
 async function loadBundledLevels() {
