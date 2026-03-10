@@ -4,7 +4,7 @@
 
 export const NATIVE_W = 320;
 export const NATIVE_H = 180;
-export const SCALE    = 3;
+export const SCALE    = 3.5;
 export const TILE     = 8;
 export const COLS     = NATIVE_W / TILE;  // 40
 export const ROWS     = NATIVE_H / TILE;  // 22

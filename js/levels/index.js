@@ -2,27 +2,19 @@
 //  Level registry — fetches JSON level files
 // ============================================================
 
-/** Manifest of bundled level file paths (order matters). */
-const LEVEL_FILES = [
-  "level1.json",
-  "level2.json",
-  "level3.json",
-  "level4.json",
-  "level5.json",
-];
-
 /** Resolve paths relative to this module (js/levels/) → ../../levels/ */
 const LEVELS_BASE = new URL("../../levels/", import.meta.url).href;
 
 let _levels = [];
 
 /**
- * Fetch all bundled levels from JSON files.
+ * Fetch manifest then load all bundled levels from JSON files.
  * Call once at startup before the game loop.
  */
 export async function loadAllLevels() {
+  const manifest = await fetch(LEVELS_BASE + "manifest.json").then((r) => r.json());
   _levels = await Promise.all(
-    LEVEL_FILES.map((name) => fetch(LEVELS_BASE + name).then((r) => r.json()))
+    manifest.map((name) => fetch(LEVELS_BASE + name).then((r) => r.json()))
   );
 }
 

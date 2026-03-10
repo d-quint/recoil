@@ -449,20 +449,17 @@ function setToolByName(name) {
   document.querySelector(`.tool-btn[data-tool="${name}"]`)?.classList.add("active");
 }
 
-// ---- bundled level manifest (same order as the game) ----
+// ---- bundled levels (loaded from manifest.json) ----
 const LEVELS_BASE = new URL("../../levels/", import.meta.url).href;
-const BUNDLED_LEVEL_FILES = [
-  "level1.json",
-  "level2.json",
-  "level3.json",
-  "level4.json",
-  "level5.json",
-];
 
 async function loadBundledLevels() {
   try {
+    const manifestRes = await fetch(LEVELS_BASE + "manifest.json");
+    if (!manifestRes.ok) return;
+    const manifest = await manifestRes.json();
+
     const fetched = await Promise.all(
-      BUNDLED_LEVEL_FILES.map((name) =>
+      manifest.map((name) =>
         fetch(LEVELS_BASE + name).then((r) => {
           if (!r.ok) return null;
           return r.json();
