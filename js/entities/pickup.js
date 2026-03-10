@@ -29,6 +29,14 @@ export default class Pickup extends Entity {
     return 0;
   }
 
+  update() {
+    const collected = this.checkCollection(this.game.player);
+    if (collected > 0) {
+      this.game.player.addAmmo(collected);
+      this.game.sfx.pickup();
+    }
+  }
+
   /** Draw the ammo pickup with a floating bob. */
   draw(ctx) {
     if (!this.alive) return;

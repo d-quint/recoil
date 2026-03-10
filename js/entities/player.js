@@ -76,7 +76,9 @@ export default class Player extends Entity {
   }
 
   /** Advance player physics + input for one frame. */
-  update(tiles) {
+  update() {
+    const currentTiles = this.game.currentTiles;
+
     if (this.dead) return;
 
     const { input } = this.game;
@@ -116,9 +118,9 @@ export default class Player extends Entity {
 
     this.grounded = false;
     this.x += this.vx;
-    resolveTileCollisions(this, tiles, "x");
+    resolveTileCollisions(this, currentTiles, "x");
     this.y += this.vy;
-    resolveTileCollisions(this, tiles, "y");
+    resolveTileCollisions(this, currentTiles, "y");
 
     // world bounds
     if (this.x < 0)                { this.x = 0;               this.vx = 0; }
@@ -130,6 +132,9 @@ export default class Player extends Entity {
 
     // muzzle flash countdown
     if (this.muzzleFlash > 0) this.muzzleFlash--;
+
+    if (this.game.player.shotFired) { this.game.shakeTimer = 4; this.game.sfx.shoot(); }
+    if (this.game.player.dryFired)  this.game.sfx.dryFire();
   }
 
   /** Draw the player sprite, crosshair, and muzzle flash. */

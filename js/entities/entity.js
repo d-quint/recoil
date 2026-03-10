@@ -19,6 +19,10 @@ export default class Entity {
     this.alive = true;
   }
 
+  /** update and draw functions (mandatory) */
+  update() {}
+  draw() {}
+
   /** Center X coordinate. */
   get cx() { return this.x + this.w / 2; }
 

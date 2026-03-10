@@ -30,7 +30,8 @@ export default class Game {
 
     // --- level data ---
     /** @type {{ x:number, y:number, w:number, h:number }[]} */
-    this.tiles      = [];
+    this.tiles        = []; // permanently solid tiles per lvl
+    this.currentTiles = []; // solid tiles per frame
     /** @type {{ x:number, y:number, content:string }[]} */
     this.textLabels = [];
     /** @type {{ x:number, y:number, w:number, h:number }|null} */
@@ -173,13 +174,6 @@ export default class Game {
     this.bullets.push(b);
   }
 
-  /** Called when a bullet kills an enemy. */
-  onEnemyKilled(enemy) {
-    this.shakeTimer = 5;
-    this.sfx.kill();
-    this._notifyGateKill(1);
-  }
-
   /** Call this to kill player.  */
   killPlayer() {
     this.particles.spawn(this.player.x + 4, this.player.y + 4, 15, 3);
@@ -190,7 +184,7 @@ export default class Game {
   }
 
   /** Notify all gates that enemies were killed. */
-  _notifyGateKill(count) {
+  notifyGateKill(count) {
     for (const gate of this.gates) {
       gate.onKill(count);
     }
@@ -214,12 +208,7 @@ export default class Game {
 
     // victory celebration
     if (this.levelWon) {
-      this.victoryTimer++;
-      if (this.player && this.victoryTimer % 4 === 0) {
-        this.particles.spawn(this.player.x + 4, this.player.y - 2, 3, 2);
-      }
-      this.particles.update();
-      this.input.resetFrame();
+      this._playVictory();
       return;
     }
 
@@ -235,52 +224,22 @@ export default class Game {
       const fl = g.getFlagRect();
       if (fl) gateFlags.push(fl);
     }
-    const allTiles = this.tiles.concat(gateTiles);
+
+    // combine gate tiles with level tiles for collision checks (enemies, bullets)
+    // currentTiles is the set of solid tiles for this particular frame
+    this.currentTiles = this.tiles.concat(gateTiles); 
 
     // player
-    this.player.update(allTiles);
-    if (this.player.shotFired) { this.shakeTimer = 4; this.sfx.shoot(); }
-    if (this.player.dryFired)  this.sfx.dryFire();
+    this.player.update();
 
     // bullets
-    let killedCount = 0;
     for (let i = this.bullets.length - 1; i >= 0; i--) {
-      const result = this.bullets[i].update(allTiles, this.enemies, this.player);
-      if (result === "hitPlayer") {
-        // enemy bullet hit the player
-        this.player.dead = true;
-        this.levelLost = true;
-        this.shakeTimer = 8;
-        this.sfx.death();
-      } else if (result) {
-        // killed an enemy
-        killedCount++;
-        this.onEnemyKilled(result);
-      }
+      this.bullets[i].update();
       if (!this.bullets[i].alive) this.bullets.splice(i, 1);
     }
 
-    // spikes
-    for (const s of this.spikes) s.update(this.player);
-
-    // enemies
-    for (const e of this.enemies) {
-      if (e.update(allTiles, this.player)) {
-        this.player.dead = true;
-        this.levelLost = true;
-        this.shakeTimer = 8;
-        this.sfx.death();
-      }
-    }
-
-    // pickups
-    for (const p of this.pickups) {
-      const collected = p.checkCollection(this.player);
-      if (collected > 0) {
-        this.player.addAmmo(collected);
-        this.sfx.pickup();
-      }
-    }
+    // update other entities
+    for (const e of [...this.enemies, ...this.pickups, ...this.gates]) e.update();
 
     // flag check
     if (this.flag && !this.player.dead && aabb(this.player, this.flag)) {
@@ -317,6 +276,15 @@ export default class Game {
     this.particles.spawn(this.player.x + 4, this.player.y + 4, 20, 3);
   }
 
+  _playVictory() {
+    this.victoryTimer++;
+    if (this.player && this.victoryTimer % 4 === 0) {
+      this.particles.spawn(this.player.x + 4, this.player.y - 2, 3, 2);
+    }
+    this.particles.update();
+    this.input.resetFrame();
+  }
+
   _updateShake() {
     if (this.shakeTimer > 0) {
       this.shakeTimer--;
@@ -344,6 +312,7 @@ export default class Game {
       this.renderer.drawTitleScreen();
       return;
     }
+
     if (this.state === "win") {
       this.renderer.drawWinScreen();
       return;

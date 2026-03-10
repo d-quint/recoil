@@ -53,7 +53,7 @@ export default class Gate extends Entity {
   draw(ctx) {
     if (!this.open) {
       ctx.drawImage(SPR_GATE, this.x | 0, this.y | 0);
-      drawText(ctx, String(this.killsRemaining), this.x + TILE / 2, this.y + 2, "center", BG);
+      drawText(ctx, String(this.killsRemaining), this.x + TILE / 2, this.y - 6, "center");
     } else if (this.breakTimer > 0) {
       if (this.breakTimer % 4 < 2) ctx.drawImage(SPR_FLAG, this.x | 0, this.y | 0);
     } else {

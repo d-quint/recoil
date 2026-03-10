@@ -50,12 +50,15 @@ export default class ShooterEnemy extends Enemy {
    * Override Enemy.update — patrol normally, but stop and shoot
    * when the player is on roughly the same Y.
    */
-  update(tiles, player) {
-    if (!this.alive) return false;
+  update() {
+    const { player } = this.game;
+
+    if (!this.alive) return;
 
     const sameLine = player && !player.dead &&
       Math.abs((this.y + this.h / 2) - (player.y + player.h / 2)) < Y_TOLERANCE;
 
+    // --- aim mode ---  
     if (sameLine) {
       // --- entering aim mode for the first time? ---
       if (!this.aiming) {
@@ -89,11 +92,9 @@ export default class ShooterEnemy extends Enemy {
       }
 
       // still check player collision (touching the shooter kills the player)
-      if (!player.dead && aabb(player, this)) {
-        this.game.particles.spawn(player.x + 4, player.y + 4, 15, 3);
-        return true;
-      }
-      return false;
+      super._checkCollision(player);
+
+      return;
     }
 
     // --- patrol mode (inherited) ---
@@ -102,7 +103,8 @@ export default class ShooterEnemy extends Enemy {
     this.alertTimer = 0;
     this.bobOffset = 0;
     this.shootTimer = SHOOT_INTERVAL;
-    return super.update(tiles, player);
+    
+    super.update();
   }
 
   /** Fire an enemy bullet toward the player. */

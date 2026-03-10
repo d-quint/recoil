@@ -27,7 +27,9 @@ export default class Bullet extends Entity {
    * Advance bullet by one frame.
    * Returns an enemy if one was killed this frame, otherwise null.
    */
-  update(tiles, enemies, player) {
+  update() {
+    const { currentTiles, enemies, player } = this.game;
+
     this.x += this.vx;
     this.y += this.vy;
     this.life--;
@@ -36,7 +38,7 @@ export default class Bullet extends Entity {
 
     // --- tile collision: bounce or shatter ---
     let hitTile = null;
-    for (const t of tiles) {
+    for (const t of currentTiles) {
       if (aabb(this, t)) { hitTile = t; break; }
     }
 
@@ -56,7 +58,7 @@ export default class Bullet extends Entity {
       const testY = { x: this.x, y: this.y + this.vy, w: this.w, h: this.h };
 
       let hitX = false, hitY = false;
-      for (const t of tiles) {
+      for (const t of currentTiles) {
         if (!hitX && aabb(testX, t)) hitX = true;
         if (!hitY && aabb(testY, t)) hitY = true;
         if (hitX && hitY) break;
@@ -77,24 +79,24 @@ export default class Bullet extends Entity {
         particles.spawn(this.x, this.y, 2, 1);
         this.alive = false;
       }
-      return null;
+
+      return;
     }
 
     // --- off-screen / expired ---
     if (this.life <= 0 || this.x < -10 || this.x > NATIVE_W + 10 ||
         this.y < -10 || this.y > NATIVE_H + 10) {
       this.alive = false;
-      return null;
+      return;
     }
 
     // --- hit enemies (player bullets only) ---
     if (this.fromPlayer) {
       for (const e of enemies) {
         if (e.alive && aabb(this, e)) {
-          e.alive = false;
+          e.die();
           this.alive = false;
-          particles.spawn(e.x + 4, e.y + 4, 10, 3);
-          return e; // killed this enemy
+          return;
         }
       }
     }
@@ -102,8 +104,8 @@ export default class Bullet extends Entity {
     // --- enemy bullets hit player ---
     if (!this.fromPlayer && player && !player.dead && aabb(this, player)) {
       this.alive = false;
-      particles.spawn(player.x + 4, player.y + 4, 10, 3);
-      return "hitPlayer";
+      this.game.killPlayer();
+      return;
     }
 
     return null;

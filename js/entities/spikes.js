@@ -18,7 +18,9 @@ export default class Spikes extends Entity {
     this.game = game;
   }
 
-  update(player) {
+  update() {
+    const player = this.game.player;
+
     // player collision
     if (!player.dead && aabb(player, this)) {
         this.game.killPlayer();

@@ -23,8 +23,10 @@ export default class Enemy extends Entity {
    * Advance enemy AI by one frame.
    * Returns true if the enemy collided with the player.
    */
-  update(tiles, player) {
-    if (!this.alive) return false;
+  update() {
+    const { currentTiles, player } = this.game;
+
+    if (!this.alive) return;
 
     this.x += this.vx;
 
@@ -37,7 +39,7 @@ export default class Enemy extends Entity {
 
     // wall check
     let hitWall = false;
-    for (const t of tiles) {
+    for (const t of currentTiles) {
       if (aabb(this, t)) {
         hitWall = true;
         this.vx *= -1;
@@ -50,7 +52,7 @@ export default class Enemy extends Entity {
     if (!hitWall) {
       const probeX = this.vx > 0 ? this.x + this.w : this.x;
       let onGround = false;
-      for (const t of tiles) {
+      for (const t of currentTiles) {
         if (aabb({ x: probeX - 1, y: this.y + this.h, w: 2, h: 2 }, t)) {
           onGround = true;
           break;
@@ -63,11 +65,26 @@ export default class Enemy extends Entity {
     }
 
     // player collision
+    this._checkCollision(player);
+
+    return;
+  }
+
+  _checkCollision(player) {
+    // player collision
     if (!player.dead && aabb(player, this)) {
-      this.game.particles.spawn(player.x + 4, player.y + 4, 15, 3);
-      return true;
+      this.game.killPlayer();
+      return;
     }
-    return false;
+  }
+
+  die() {
+    this.alive = false;
+    this.game.particles.spawn(this.x + 4, this.y + 4, 10, 3);
+
+    this.game.shakeTimer = 5;
+    this.game.sfx.kill();
+    this.game.notifyGateKill(1);
   }
 
   /** Draw the enemy sprite. */
