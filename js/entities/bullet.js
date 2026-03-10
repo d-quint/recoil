@@ -86,7 +86,7 @@ export default class Bullet extends Entity {
       return null;
     }
 
-    // --- hit enemies ---
+    // --- hit enemies (player bullets only) ---
     if (this.fromPlayer) {
       for (const e of enemies) {
         if (e.alive && aabb(this, e)) {
@@ -96,6 +96,13 @@ export default class Bullet extends Entity {
           return e; // killed this enemy
         }
       }
+    }
+
+    // --- enemy bullets hit player ---
+    if (!this.fromPlayer && player && !player.dead && aabb(this, player)) {
+      this.alive = false;
+      particles.spawn(player.x + 4, player.y + 4, 10, 3);
+      return "hitPlayer";
     }
 
     return null;

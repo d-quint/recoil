@@ -129,6 +129,7 @@ const ENTITY_COLORS = {
   P: "#00cc66",
   F: "#ffcc00",
   E: "#ff4444",
+  S: "#ff8800",
   A: "#44aaff",
   G: "#aa44ff",
   T: "#88ccaa",
@@ -225,6 +226,9 @@ function placeTool(row, col) {
       break;
     case "enemy":
       grid[row][col] = "E";
+      break;
+    case "shooter":
+      grid[row][col] = "S";
       break;
     case "ammo":
       grid[row][col] = "A";
@@ -441,6 +445,7 @@ window.addEventListener("keydown", (e) => {
   if (e.code === "Digit6") setToolByName("ammo");
   if (e.code === "Digit7") setToolByName("gate");
   if (e.code === "Digit8") setToolByName("text");
+  if (e.code === "Digit9") setToolByName("shooter");
 });
 
 function setToolByName(name) {

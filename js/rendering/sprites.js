@@ -120,6 +120,54 @@ export const SPR_AMMO = makeSprite([
   ".####.",
 ]);
 
+// Shooter enemy facing right (8×8) — frame 0
+export const SPR_SHOOTER_R = makeSprite([
+  "..####..",
+  ".######.",
+  ".#.##.#.",
+  ".######.",
+  "..####..",
+  "...##.##",
+  "..####..",
+  "..#..#..",
+]);
+
+// Shooter enemy facing right — frame 1
+export const SPR_SHOOTER_R2 = makeSprite([
+  "..####..",
+  ".######.",
+  ".#.##.#.",
+  ".######.",
+  "..####..",
+  "...##.##",
+  "..####..",
+  "...##...",
+]);
+
+// Shooter enemy facing left (8×8) — frame 0
+export const SPR_SHOOTER_L = makeSprite([
+  "..####..",
+  ".######.",
+  ".#.##.#.",
+  ".######.",
+  "..####..",
+  "##.##...",
+  "..####..",
+  "..#..#..",
+]);
+
+// Shooter enemy facing left — frame 1
+export const SPR_SHOOTER_L2 = makeSprite([
+  "..####..",
+  ".######.",
+  ".#.##.#.",
+  ".######.",
+  "..####..",
+  "##.##...",
+  "..####..",
+  "...##...",
+]);
+
 // Gate / locked wall (8×8) — a barred wall
 export const SPR_GATE = makeSprite([
   "########",

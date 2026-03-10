@@ -13,6 +13,7 @@ import { aabb }        from "./engine/physics.js";
 import Bullet         from "./entities/bullet.js";
 import Renderer       from "./rendering/hud.js";
 import LevelManager   from "./levels/index.js";
+import ShooterEnemy   from "./entities/shooterEnemy.js";
 
 export default class Game {
   constructor() {
@@ -156,9 +157,18 @@ export default class Game {
   //  Entity helpers
   // ==========================================================
 
-  /** Spawn a new bullet into the world. */
+  /** Spawn a new player bullet into the world. */
   addBullet(x, y, vx, vy) {
     this.bullets.push(new Bullet(this, x, y, vx, vy));
+  }
+
+  /** Spawn an enemy bullet (does not hit enemies, hurts player). */
+  addEnemyBullet(x, y, vx, vy) {
+    const b = new Bullet(this, x, y, vx, vy);
+    b.fromPlayer = false;
+    b.life = Infinity;    // only dies on wall hit or screen edge
+    b.bounces = 999;      // enemy bullets don't bounce — shatter on wall
+    this.bullets.push(b);
   }
 
   /** Called when a bullet kills an enemy. */
@@ -224,10 +234,17 @@ export default class Game {
     // bullets
     let killedCount = 0;
     for (let i = this.bullets.length - 1; i >= 0; i--) {
-      const killed = this.bullets[i].update(allTiles, this.enemies, this.player);
-      if (killed) {
+      const result = this.bullets[i].update(allTiles, this.enemies, this.player);
+      if (result === "hitPlayer") {
+        // enemy bullet hit the player
+        this.player.dead = true;
+        this.levelLost = true;
+        this.shakeTimer = 8;
+        this.sfx.death();
+      } else if (result) {
+        // killed an enemy
         killedCount++;
-        this.onEnemyKilled(killed);
+        this.onEnemyKilled(result);
       }
       if (!this.bullets[i].alive) this.bullets.splice(i, 1);
     }

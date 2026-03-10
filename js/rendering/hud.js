@@ -7,6 +7,7 @@ import { drawText } from "./font.js";
 import {
   SPR_PLAYER_R, SPR_PLAYER_L, SPR_PLAYER_R2, SPR_PLAYER_L2,
   SPR_ENEMY, SPR_ENEMY2,
+  SPR_SHOOTER_R, SPR_SHOOTER_R2, SPR_SHOOTER_L, SPR_SHOOTER_L2,
   SPR_FLAG, SPR_BULLET, SPR_AMMO, SPR_GATE,
 } from "./sprites.js";
 
@@ -119,7 +120,23 @@ export default class Renderer {
     // --- enemies ---
     for (const e of enemies) {
       if (!e.alive) continue;
-      this._drawSprite(e.animFrame ? SPR_ENEMY2 : SPR_ENEMY, e.x, e.y);
+      if (e.isShooter) {
+        const facingRight = e.aiming ? e.aimDir > 0 : e.vx > 0;
+        let spr;
+        if (facingRight) spr = e.animFrame ? SPR_SHOOTER_R2 : SPR_SHOOTER_R;
+        else             spr = e.animFrame ? SPR_SHOOTER_L2 : SPR_SHOOTER_L;
+
+        // breathing bob offset when aiming
+        const drawY = e.aiming ? e.y + (e.bobOffset || 0) : e.y;
+        this._drawSprite(spr, e.x, drawY);
+
+        // exclamation mark alert
+        if (e.showAlert) {
+          drawText(ctx, "!", e.x + 3, e.y - 6);
+        }
+      } else {
+        this._drawSprite(e.animFrame ? SPR_ENEMY2 : SPR_ENEMY, e.x, e.y);
+      }
     }
 
     // --- player ---

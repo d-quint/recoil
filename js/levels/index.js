@@ -3,10 +3,11 @@
 // ============================================================
 
 import { TILE } from "../constants.js";
-import Player from "../entities/player.js";
-import Enemy  from "../entities/enemy.js";
-import Pickup from "../entities/pickup.js";
-import Gate   from "../entities/gate.js";
+import Player       from "../entities/player.js";
+import Enemy        from "../entities/enemy.js";
+import ShooterEnemy from "../entities/shooterEnemy.js";
+import Pickup       from "../entities/pickup.js";
+import Gate         from "../entities/gate.js";
 
 /** Resolve paths relative to this module (js/levels/) → ../../levels/ */
 const LEVELS_BASE = new URL("../../levels/", import.meta.url).href;
@@ -76,7 +77,7 @@ export default class LevelManager {
     let enemyCount = 0;
     for (let r = 0; r < map.length; r++)
       for (let c = 0; c < map[r].length; c++)
-        if (map[r][c] === "E") enemyCount++;
+        if (map[r][c] === "E" || map[r][c] === "S") enemyCount++;
 
     for (let r = 0; r < map.length; r++) {
       for (let c = 0; c < map[r].length; c++) {
@@ -96,6 +97,9 @@ export default class LevelManager {
             break;
           case "E":
             game.enemies.push(new Enemy(game, x, y));
+            break;
+          case "S":
+            game.enemies.push(new ShooterEnemy(game, x, y));
             break;
           case "A":
             game.pickups.push(new Pickup(game, x, y));
